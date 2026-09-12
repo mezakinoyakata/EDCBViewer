@@ -79,5 +79,12 @@ public class FastestMarkTests
             $"{sw.Elapsed.TotalSeconds:F0} 秒）: {reader.LastSyobocalError}");
         Assert.True(keys!.Count > 0,
             $"最速が0件。対象ファイル {withEvents.Count} 件 / covered_from {coveredFrom}");
+
+        // 直近の録画にも付くこと（古いファイルにだけ付いて新しいものに付かない状態を検出する）
+        var recent = keys!.Where(k => k.StartTime >= DateTime.Now.AddDays(-7)).ToList();
+        Assert.True(recent.Count > 0,
+            $"直近7日の最速が0件。全体 {keys.Count} 件 / 最新 " +
+            $"{(keys.Count > 0 ? keys.Max(k => k.StartTime).ToString("yyyy-MM-dd HH:mm") : "-")} / " +
+            $"対象ファイル {withEvents.Count} 件");
     }
 }
